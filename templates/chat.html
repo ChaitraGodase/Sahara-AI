@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>💬 Chat with Saharaa AI</h2>
+<form method="POST" action="/chat">
+    <input type="text" name="message" placeholder="Type your message..." required>
+    <button type="submit">Send</button>
+</form>
+
+{% if user_message %}
+    <p><b>You:</b> {{ user_message }}</p>
+    <p><b>Saharaa AI:</b> {{ bot_response }}</p>
+{% endif %}
+{% endblock %}
