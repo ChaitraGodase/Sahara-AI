@@ -1,20 +1,43 @@
-from transformers import pipeline
+# chat_utils.py
+import re, random
+from sentiment_utils import analyze_sentiment
 
-# Load a small Hugging Face model
-chatbot = pipeline("text-generation", model="distilgpt2")
+# simple pattern-based responses
+PATTERN_RESPONSES = [
+    (r"\bstress(ed)?\b", "I'm sorry you're feeling stressed. Small breaks and breathing exercises can help."),
+    (r"\b(exam|exams|test|project)\b", "Exams are tough — break tasks into small steps and try the Pomodoro method."),
+    (r"\b(sad|depress|lonely)\b", "I'm here for you. Do you want to talk about what's making you feel this way?"),
+    (r"\banxious\b", "That sounds hard. Try grounding: 5 deep breaths, name 5 things you see."),
+    (r"\bhelp\b", "If you're in immediate danger, please contact local emergency services or a helpline. I'm also here to listen."),
+    (r"\bhello|hi|hey\b", "Hey! How are you feeling today?"),
+    (r"\bthank(s| you)\b", "You're welcome — I'm glad I could help.")
+]
 
-def generate_response(user_message):
-    # Simple rule-based replies
-    if "stress" in user_message.lower():
-        return "I'm sorry you're feeling stressed 💙 Try taking deep breaths or a short break."
-    elif "sad" in user_message.lower():
-        return "It's okay to feel sad sometimes 🌸 Talking about it can help. Want to share more?"
-    elif "happy" in user_message.lower():
-        return "That's amazing! 🎉 Keep doing what makes you feel happy!"
-    
-    # Fallback to AI model
+FALLBACKS = [
+    "I hear you. Tell me more about what's on your mind.",
+    "Thanks for sharing — I'm listening. Can you say a bit more?",
+    "That sounds important. What happened before you felt this way?"
+]
+
+def generate_response(user_input: str) -> str:
+    text = user_input.lower()
+    # pattern match
+    for pattern, response in PATTERN_RESPONSES:
+        if re.search(pattern, text):
+            base = response
+            break
+    else:
+        # choose fallback
+        base = random.choice(FALLBACKS)
+    # add empathy based on sentiment
     try:
-        response = chatbot(user_message, max_length=60, num_return_sequences=1)
-        return response[0]['generated_text']
-    except:
-        return "I'm here for you. Can you tell me more?"
+        sentiment = analyze_sentiment(user_input)
+    except Exception:
+        sentiment = "Neutral"
+    if sentiment == "Negative":
+        extra = " 💜 I sense you're feeling down. Try 3 deep breaths or take a short walk. If things feel unsafe, contact a helpline."
+    elif sentiment == "Positive":
+        extra = " 🌟 That's great to hear! Keep it up."
+    else:
+        extra = ""
+    return base + extra

@@ -1,13 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>💬 Chat with Saharaa AI</h2>
-<form method="POST" action="/chat">
-    <input type="text" name="message" placeholder="Type your message..." required>
+  <h2>Chat</h2>
+  <form method="POST" action="{{ url_for('chat') }}">
+    <input name="message" placeholder="Type your message..." required>
     <button type="submit">Send</button>
-</form>
+  </form>
 
-{% if user_message %}
-    <p><b>You:</b> {{ user_message }}</p>
-    <p><b>Saharaa AI:</b> {{ bot_response }}</p>
-{% endif %}
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if user_message %}
+    <div class="chat-box">
+      <p><strong>You:</strong> {{ user_message }}</p>
+      <p><strong>Saharaa AI:</strong> {{ bot_response }}</p>
+    </div>
+  {% endif %}
 {% endblock %}

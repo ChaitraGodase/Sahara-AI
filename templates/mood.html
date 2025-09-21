@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Mood Log</h2>
+  <form method="POST" action="{{ url_for('mood') }}">
+    <textarea name="mood_text" placeholder="Write how you feel..." required></textarea>
+    <button type="submit">Log Mood</button>
+  </form>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if sentiment %}
+    <h3>Sentiment: {{ sentiment }}</h3>
+    <p>You wrote: "{{ mood_text }}"</p>
+    <h4>Suggestions:</h4>
+    <ul>
+      {% for a in activities %}
+        <li>{{ a }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

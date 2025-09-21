@@ -1,19 +1,22 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>Saharaa AI</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8">
+  <title>Saharaa AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Saharaa AI 🌿</h1>
-        <nav>
-            <a href="/">Home</a> |
-            <a href="/chat">Chat</a>
-        </nav>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+  <header>
+    <h1>Saharaa AI</h1>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a> |
+      <a href="{{ url_for('chat') }}">Chat</a> |
+      <a href="{{ url_for('mood') }}">Mood Log</a> |
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>
