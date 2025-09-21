@@ -4,4 +4,3 @@ pandas==2.1.2
 plotly==5.16.0
 numpy==1.26.0
 nltk==3.9.1
-transformers==4.42.2  # Optional: only if you are using Hugging Face pipeline
