@@ -2,7 +2,7 @@ Flask==3.0.3
 textblob==0.17.1
 pandas==2.1.2
 plotly==5.16.0
-numpy==1.26.0
+numpy==1.25.3
 nltk==3.9.1
 gunicorn==21.2.0
 python-dotenv==1.0.0
