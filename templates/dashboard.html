@@ -8,7 +8,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const moodData = (mood_data|safe)  ;
+    // Injected JSON safe
+    const moodData = (mood_data | safe );
     const labels = moodData.map(d => d.date);
     const values = moodData.map(d => d.value);
     const colors = moodData.map(d => d.value === 1 ? 'green' : (d.value === -1 ? 'red' : 'gray'));
@@ -23,6 +24,7 @@
           data: values,
           backgroundColor: 'rgba(0, 123, 255, 0.2)',
           borderColor: 'rgba(0, 123, 255, 0.8)',
+          pointBackgroundColor: colors,
           fill: true,
           tension: 0.3
         }]

@@ -1,4 +1,3 @@
-# recommendations.py
 def recommend_activity(sentiment):
     if sentiment == "Negative":
         return [

@@ -1,20 +1,30 @@
-# app.py
+import os
+import json
+from datetime import datetime
+from pathlib import Path
+
 from flask import Flask, render_template, request, jsonify
 import pandas as pd
-from datetime import datetime
-import json
+
 from chat_utils import generate_response
 from sentiment_utils import analyze_sentiment
 from recommendations import recommend_activity
 
 app = Flask(__name__)
 
-CSV_FILE = "mood_log.csv"
+# Ensure data folder exists and use a safe CSV path
+BASE_DIR = Path(__file__).parent.resolve()
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
+CSV_FILE = DATA_DIR / "mood_log.csv"
 
 # Load or initialize mood log
 try:
     mood_df = pd.read_csv(CSV_FILE)
-except FileNotFoundError:
+    # ensure expected columns
+    if set(["date", "mood_text", "sentiment"]) - set(mood_df.columns):
+        mood_df = pd.DataFrame(columns=["date", "mood_text", "sentiment"])
+except (FileNotFoundError, pd.errors.EmptyDataError):
     mood_df = pd.DataFrame(columns=["date", "mood_text", "sentiment"])
 
 # Home route
@@ -53,10 +63,9 @@ def mood():
             return render_template("mood.html", error="Please write how you feel.")
         sentiment = analyze_sentiment(mood_text)
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        mood_df = pd.concat(
-            [mood_df, pd.DataFrame([[date, mood_text, sentiment]], columns=mood_df.columns)],
-            ignore_index=True
-        )
+        new_row = pd.DataFrame([[date, mood_text, sentiment]], columns=["date", "mood_text", "sentiment"])
+        mood_df = pd.concat([mood_df, new_row], ignore_index=True)
+        # persist
         mood_df.to_csv(CSV_FILE, index=False)
         activities = recommend_activity(sentiment)
         return render_template("mood.html", sentiment=sentiment, activities=activities, mood_text=mood_text)
@@ -78,7 +87,7 @@ def dashboard():
         data_json = json.dumps(data_points)
     return render_template("dashboard.html", mood_data=data_json)
 
-# Main entry point
 if __name__ == "__main__":
-    # host='0.0.0.0' allows external access (ngrok or Render)
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(host="0.0.0.0", port=port, debug=debug)
